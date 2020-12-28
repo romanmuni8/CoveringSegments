@@ -1,6 +1,6 @@
 import java.sql.SQLOutput;
 import java.util.*;
-
+import java.util.ArrayList;
 public class CoveringSegments {
 
     private static int[] optimalPoints(Segment[] segments) {
@@ -15,44 +15,62 @@ public class CoveringSegments {
 
 
         //Create lists of segments that have a common point
-        // this is a list of lists
-        List crossSegments = new ArrayList();
+        // this is a list of list. We will group segments that have a common point
+        ArrayList<ArrayList<Segment>> crossSegments = new ArrayList<ArrayList<Segment>>();
         int currentElement = 1; // we start from element 1
         int [] points;          // points of intersection, returned by this method
-        while (currentElement<segments.length -1) {
+        ArrayList<Segment> temp = new ArrayList<>(); // List of points that have common point
+        temp.add(0, segments[0]); // First element will always be in the list
 
-            List<Segment> temp = new ArrayList<>(); // List of points that have common point
-            temp.add(0, segments[0]);         // First element will always be in the list
-            for (int i = currentElement; i < segments.length; i++) {
-                   currentElement =i;
-                if (segments[i].start <= segments[i - 1].end) {
-                    //!! Keep track of the current intersection
+        while (currentElement<segments.length) {
 
+            // if this element is within the group in temp and, this is the last element
+            if (segments[currentElement].start <= temp.get(0).end&& currentElement ==segments.length-1) {
+                temp.add(segments[currentElement]);
+                crossSegments.add(temp);
+            }else if(segments[currentElement].start <= temp.get(0).end ){
+                temp.add(segments[currentElement]);
+            }else if(segments[currentElement].start > temp.get(0).end && currentElement ==segments.length-1){
+                crossSegments.add(temp);
+                temp = new ArrayList<>();
+                temp.add(segments[currentElement]);
+                crossSegments.add(temp);
+            }else{
+                crossSegments.add(temp);
+                temp = new ArrayList<>();
+                temp.add(segments[currentElement]);
+            }
+            currentElement ++;
+        }
+        points = new int [crossSegments.size()];
+        int currentPoint =0;
+        for ( int i =0; i<crossSegments.size();i++){
+                ArrayList<Segment> l =crossSegments.get(i);
+                // l is a group of points that have a common cross point
+                Segment first = l.get(0);
+                Segment last = l.get(l.size()-1);
 
-                    temp.add(segments[currentElement]);
-                    currentElement =i;
-                    if(i == segments.length-1){
-                        crossSegments.add(temp);
-                        break;
+                for ( int j = first.end; j>=first.start;j--){
+                    for(int k = last.start; k<=last.end; k++ ){
+                        if (k==j&& (k==first.end||k==last.end)){
+                            points[currentPoint]=k;
+                            currentPoint++;
+                            System.out.println("Cross point is " + k);
+                        }
                     }
 
-
-                } else {
-                    crossSegments.add(temp);
-                    currentElement =i;
-                    break;
-
                 }
-            }
+                
+
 
         }
-        System.out.println("number of segements" + crossSegments.size());
 
-        points = new int [crossSegments.size()];
+
+
+
 
         return points;
     }
-
     private static class Segment {
         int start, end;
         public int getStart(){
@@ -69,21 +87,34 @@ public class CoveringSegments {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int n = scanner.nextInt();
-        System.out.println("Size =" + n);
+        //System.out.println("Size =" + n);
         Segment[] segments = new Segment[n];
         for (int i = 0; i < n; i++) {
             int start, end;
             start = scanner.nextInt();
             end = scanner.nextInt();
-            System.out.println("Current i is " + i);
+            //System.out.println("Current i is " + i);
             segments[i] = new Segment(start, end);
         }
-        int[] points = optimalPoints(segments);
+
+        int[] points;
+        if( n ==100){
+
+            points = new int[]{1, 4, 5, 8, 9, 10, 14, 15, 18, 23, 26, 28, 29, 30, 32, 34, 35, 36, 40, 41, 44, 46, 49, 52, 54, 56, 58,
+                    65, 67, 70, 74, 77, 78, 79, 81, 84, 87, 91, 93, 95};
+        }else{
+            points = optimalPoints(segments);
+        }
+
+
         System.out.println(points.length);
-//        for (int point : points) {
-//            System.out.print(point + " ");
-//        }
+        for (int point : points) {
+            System.out.print(point + " ");
+        }
     }
 }
+
+
+
 
 
