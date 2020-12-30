@@ -97,14 +97,8 @@ public class CoveringSegments {
             segments[i] = new Segment(start, end);
         }
 
-        int[] points;
-        if( n ==100){
+        int[] points = optimalPoints(segments);
 
-            points = new int[]{1, 4, 5, 8, 9, 10, 14, 15, 18, 23, 26, 28, 29, 30, 32, 34, 35, 36, 40, 41, 44, 46, 49, 52, 54, 56, 58,
-                    65, 67, 70, 74, 77, 78, 79, 81, 84, 87, 91, 93, 95};
-        }else{
-            points = optimalPoints(segments);
-        }
 
 
         System.out.println(points.length);
